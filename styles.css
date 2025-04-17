@@ -1,0 +1,45 @@
+:root {
+  --board-width: 300px;
+  --symbol-size: 3.5rem;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+body {
+  background-color: #333;
+  width: calc(var(--board-width) + 200px);
+  margin: 0 auto;
+  font-size: 1.2rem;
+}
+
+#setup, #players {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.player-input-card, .player-display-card, .input-label-pair {
+  display: flex;
+  flex-direction: column;
+}
+
+#board {
+  width: var(--board-width);
+  margin: 0 auto;
+  display: grid;
+}
+
+.board-button {
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.points-display:before {
+  content: "points: ";
+}
