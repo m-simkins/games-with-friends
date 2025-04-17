@@ -37,64 +37,8 @@ function Board() {
   };
 };
 
-function ticTacToe() {
-  const defaultMarks = ["X", "O"];
-  const board = Board();
-  let message;
-  function resolveTurn(row, col, player) {
-    if (playerWinsRound(row, col, player)) {
-      player.addPoint();
-      message = `${player.getValue("name")} wins! play again?`
-      return "win";
-    } else if (boardIsFull()) {
-      message = "it's a draw. play again?"
-      return "draw";
-    } else {
-      return "";
-    }
-  };
-  function playerWinsRound(row, col, player) {
-    const playerMark = player.getValue("mark");
-    const boardArr = board.getBoard();
-    const checkedLines = [[],[],[],[]];
-    const isAWinner = [];
-    for (let i = 0; i < boardArr.length; i++) {
-      checkedLines[0].push(boardArr[row][i]);
-      checkedLines[1].push(boardArr[i][col]);
-      checkedLines[2].push(boardArr[i][i]);
-      checkedLines[3].push(boardArr[i][boardArr.length - 1 - i]);
-    }
-    checkedLines.forEach((line) => {
-      isAWinner.push(line.every((mark) => mark === playerMark));
-    })
-    return isAWinner.indexOf(true) !== -1
-  };
-  function boardIsFull() {
-    const checks = [];
-    board.getBoard().forEach((row) => checks.push(row.every((mark) => mark !== "")));
-    return checks.every((check) => check === true);
-  };
-  return {
-    getDefaultMarks: () => defaultMarks,
-    getBoard: board.getBoard,
-    clearBoard: board.clearBoard,
-    buildBoard: (players) => board.buildBoard(players.length + 1),
-    takeTurn: (row, col, player) => {
-      if (board.getBoard()[row][col] === "") {
-        board.markBoard(row, col, player.getValue("mark"));
-        return resolveTurn(row, col, player);
-      } else {
-        return "invalid";
-      }
-    },
-    getMessage: () => message,
-    setMessage: (newMessage) => message = newMessage,
-  }
-
-};
-
 function State() {
-  const defaultGame = ticTacToe();
+  const defaultGame = checkers();
   const defaultMarks = defaultGame.getDefaultMarks();
   const players = [];
   let game = defaultGame;
@@ -111,7 +55,7 @@ function State() {
   function setPlayerDefaults() {
     defaultMarks.forEach((mark) => {
       const player = Player();
-      player.setValue("name",`player${mark}`);
+      player.setValue("name",`player ${mark}`);
       player.setValue("mark",`${mark.toUpperCase()}`);
       players.push(player);
     });
@@ -153,7 +97,7 @@ function State() {
 };
 
 function Elements() {
-  function LabelInputPair(inputName) {
+  function LabelInputPair(inputName, defaultValue) {
     const pair = document.createElement("div");
     pair.classList.add(`${inputName}-input-label-pair`, "input-label-pair");
     const label = document.createElement("label");
@@ -162,6 +106,8 @@ function Elements() {
     const input = document.createElement("input");
     input.classList.add(`${inputName}-input`, "player-input");
     input.name = `${inputName}`;
+    // input.placeholder = `${defaultValue}`;
+    input.defaultValue = `${defaultValue}`;
     pair.append(label, input);
     return pair;
   }
@@ -171,7 +117,10 @@ function Elements() {
     card.classList.add("player-input-card");
     for (let i = 0; i < player.getEntries().length; i++) {
       const entry = player.getEntries()[i];
-      if (typeof entry[1] === "string") card.append(LabelInputPair(entry[0]));
+      if (typeof entry[1] === "string") {
+        const pair = LabelInputPair(entry[0], entry[1]);
+        card.append(pair);
+      };
     }
     return card;
   }
@@ -258,6 +207,7 @@ function Listeners() {
       const player = Player();
       const inputs = Array.from(card.getElementsByTagName("input"));
       inputs.forEach(input => {
+        if (!input.value) input.value = input.defaultValue;
         player.setValue(input.name, input.value);
       });
       state.addPlayer(player);
@@ -311,6 +261,21 @@ function Listeners() {
     startGame,
     takeTurn,
     playAgain,
+  }
+}
+
+function checkers() {
+  const defaultMarks = ["\u{26AB}", "\u{1F534}"];
+  const board = Board();
+  let message;
+  return {
+    getDefaultMarks: () => defaultMarks,
+    getBoard: board.getBoard,
+    clearBoard: board.clearBoard,
+    buildBoard: () => board.buildBoard(8),
+    takeTurn: () => console.log("i still need to build this"),
+    getMessage: () => message,
+    setMessage: (newMessage) => message = newMessage,
   }
 }
 
